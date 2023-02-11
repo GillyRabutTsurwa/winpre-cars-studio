@@ -6,11 +6,6 @@ export default defineType({
   type: 'object',
   fields: [
     defineField({
-      name: 'vin',
-      title: 'VIN',
-      type: 'string',
-    }),
-    defineField({
       name: 'mileage',
       title: 'Mileage',
       type: 'number',

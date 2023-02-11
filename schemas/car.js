@@ -20,10 +20,38 @@ export default defineType({
       title: 'Year',
       type: 'number',
     }),
-    /**
-     * NEW: added new field
-     * thanks to https://www.sanity.io/docs/string-type for reference
-     */
+    defineField({
+      name: 'vin',
+      title: 'VIN',
+      type: 'string',
+    }),
+    defineField({
+      name: 'slug',
+      title: 'Slug',
+      type: 'slug',
+      hidden: ({currentUser}) => {
+        return !currentUser.roles.find(({name}) => name === 'administrator' || name === 'editor') //NOTE: this should work
+      },
+      /**
+       * NOTEIMPORTANT: figured out how to generate a slug from multiple field types
+       * thanks to these two links:
+       * https://www.sanity.io/docs/slug-type
+       * https://stackoverflow.com/questions/58450560/sanity-io-add-custom-date-to-slug-url (less so, but still helped)
+       * IMPORTANT: the properties under Options in the documentation (like source), MUST be in the options object, or else it won't work
+       * so the source property cannot be outside the options object along with the other properties.
+       */
+      options: {
+        source: (doc, options) => {
+          console.log(doc)
+          console.log(options)
+          const brand = doc.brand.toLowerCase()
+          const model = doc.model.toLowerCase()
+          const year = doc.year
+          const vin = doc.vin.slice(4) //NOTE: taking the 5th character of the VIN onwards
+          return `${brand}-${model}-${year}-${vin}`
+        },
+      },
+    }),
     defineField({
       name: 'type',
       title: 'Type',
@@ -38,16 +66,7 @@ export default defineType({
         ],
         layout: 'radio',
       },
-      // NOTE: making these required. cannot publish sans selectionner
       validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'slug',
-      title: 'Slug',
-      type: 'slug',
-      hidden: ({currentUser}) => {
-        return !currentUser.roles.find(({name}) => name === 'administrator')
-      },
     }),
     defineField({
       title: 'Price',
@@ -55,13 +74,11 @@ export default defineType({
       type: 'number',
     }),
     defineField({
-      // NEWNOTE: added new field, same schema as the new one above
       title: 'Price Level',
       name: 'priceLevel',
       type: 'string',
       options: {
         list: [
-          // NOTE; not ideal to add the helper info to the title, but it doesn't show in the data, so its OK for now
           {title: 'One ($4,999 or Less)', value: 'first'},
           {title: 'Two ($5,000 to $9,999)', value: 'second'},
           {title: 'Three ($10,000 to $14,999)', value: 'third'},
