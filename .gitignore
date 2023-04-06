@@ -26,5 +26,6 @@
 *.tsbuildinfo
 
 # Added By Me
+static
 .eslintrc
 package-lock.json
