@@ -24,3 +24,7 @@
 
 # Typescript
 *.tsbuildinfo
+
+# Added By Me
+.eslintrc
+package-lock.json
